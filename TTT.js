@@ -1,4 +1,3 @@
-/*
 const theGrid = (() => {
     const playerList = [];
     const gridButtons = [];
@@ -7,12 +6,6 @@ const theGrid = (() => {
 
     return { playerList, gridButtons, gridTokens, currentTurn };
 })();
-*/
-
-const Grid = (playerList, gridButtons, gridTokens, currentTurn) => {
-    const something = 0;
-    return { playerList, gridButtons, gridTokens, currentTurn };
-};
 
 const Player = (name, token) => {
     const sayName = () => console.log(`Hello ${name}`);
@@ -20,7 +13,7 @@ const Player = (name, token) => {
 };
 
 function checkResult() {
-    const g = currentGame.gridTokens;
+    const g = theGrid.gridTokens;
     if (
         g[0] + g[1] + g[2] === 'XXX' ||
         g[3] + g[4] + g[5] === 'XXX' ||
@@ -94,12 +87,6 @@ function assignButtons() {
 function startGame() {
     // erases the board, clears the arrays
 
-    const playerList = [];
-    const gridButtons = [];
-    const gridTokens = [];
-    const currentTurn = true;
-    const currentGame = Grid(playerList, gridButtons, gridTokens, currentTurn);
-
     // creates Player objects from the names inputted
     const player0 = document.querySelector('#left-name').value;
     const player1 = document.querySelector('#right-name').value;
@@ -107,8 +94,8 @@ function startGame() {
     // if blank, insert a default
     //
 
-    currentGame.playerList[0] = Player(player0, 'X');
-    currentGame.playerList[1] = Player(player1, 'O');
+    theGrid.playerList[0] = Player(player0, 'X');
+    theGrid.playerList[1] = Player(player1, 'O');
 
     assignButtons();
 }
