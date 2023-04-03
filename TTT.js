@@ -1,23 +1,26 @@
-const playerList = [];
+/*
+const theGrid = (() => {
+    const playerList = [];
+    const gridButtons = [];
+    const gridTokens = [];
+    let currentTurn = true;
 
-let currentTurn = true;
+    return { playerList, gridButtons, gridTokens, currentTurn };
+})();
+*/
 
-const gridButtons = [];
-
-const gridTokens = [];
+const Grid = (playerList, gridButtons, gridTokens, currentTurn) => {
+    const something = 0;
+    return { playerList, gridButtons, gridTokens, currentTurn };
+};
 
 const Player = (name, token) => {
     const sayName = () => console.log(`Hello ${name}`);
     return { name, token, sayName };
 };
 
-// Alternate currentTurn between true and false
-// Represents the turn of player0 and player1
-playerList[0] = Player('Chris', 'X');
-playerList[1] = Player('Nick', 'O');
-
 function checkResult() {
-    const g = gridTokens;
+    const g = currentGame.gridTokens;
     if (
         g[0] + g[1] + g[2] === 'XXX' ||
         g[3] + g[4] + g[5] === 'XXX' ||
@@ -28,7 +31,7 @@ function checkResult() {
         g[0] + g[4] + g[8] === 'XXX' ||
         g[6] + g[4] + g[2] === 'XXX'
     ) {
-        alert('player 0 wins!');
+        alert(`The winner is ${theGrid.playerList[0].name}`);
     }
     if (
         g[0] + g[1] + g[2] === 'OOO' ||
@@ -40,21 +43,28 @@ function checkResult() {
         g[0] + g[4] + g[8] === 'OOO' ||
         g[6] + g[4] + g[2] === 'OOO'
     ) {
-        alert('player 1 wins!');
+        alert(`The winner is ${theGrid.playerList[1].name}`);
     }
 }
+
 function clickButton(value) {
     const currentButton = document.querySelector(`#${value}`);
     const index = value.slice(-1);
-    if (currentTurn) {
-        currentButton.innerHTML = playerList[0].token;
-        currentTurn = false;
-        gridTokens[index] = playerList[0].token;
+
+    if (theGrid.gridTokens[index]) {
+        // Ignore duplicates
+        return;
+    }
+
+    if (theGrid.currentTurn) {
+        currentButton.innerHTML = theGrid.playerList[0].token;
+        theGrid.currentTurn = false;
+        theGrid.gridTokens[index] = theGrid.playerList[0].token;
         checkResult();
     } else {
-        currentButton.innerHTML = playerList[1].token;
-        currentTurn = true;
-        gridTokens[index] = playerList[1].token;
+        currentButton.innerHTML = theGrid.playerList[1].token;
+        theGrid.currentTurn = true;
+        theGrid.gridTokens[index] = theGrid.playerList[1].token;
         checkResult();
     }
 }
@@ -77,8 +87,33 @@ Set up an array of Button objects
 */
 function assignButtons() {
     for (let i = 0; i < 9; i++) {
-        gridButtons[i] = Button(i);
+        theGrid.gridButtons[i] = Button(i);
     }
 }
 
-assignButtons();
+function startGame() {
+    // erases the board, clears the arrays
+
+    const playerList = [];
+    const gridButtons = [];
+    const gridTokens = [];
+    const currentTurn = true;
+    const currentGame = Grid(playerList, gridButtons, gridTokens, currentTurn);
+
+    // creates Player objects from the names inputted
+    const player0 = document.querySelector('#left-name').value;
+    const player1 = document.querySelector('#right-name').value;
+
+    // if blank, insert a default
+    //
+
+    currentGame.playerList[0] = Player(player0, 'X');
+    currentGame.playerList[1] = Player(player1, 'O');
+
+    assignButtons();
+}
+
+const startButton = document.querySelector('#start-button');
+startButton.addEventListener('click', function () {
+    startGame();
+});

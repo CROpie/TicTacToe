@@ -8,6 +8,35 @@
     box-sizing: border-box;
 }
 
+#header {
+    display: flex;
+    justify-content: space-between;
+    max-width: 300px;
+    border: 2px solid red;
+    border-radius: 7px;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+#header > * {
+    max-width: 100px;
+    text-align: center;
+    border: 2px solid red;
+}
+
+#left-token,
+#right-token {
+    flex: 1;
+}
+
+#left-name,
+#right-name {
+    flex: 3;
+}
+
+#start {
+    flex: 1;
+}
 #gameboard {
     display: grid;
     grid-template-columns: 100px 100px 100px;
@@ -16,6 +45,7 @@
 
 .square {
     background-color: white;
+    font-size: 40px;
 }
 
 #p0 {
