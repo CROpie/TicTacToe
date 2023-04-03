@@ -1,0 +1,55 @@
+:root {
+    --grid-border: 3px solid black;
+}
+
+* {
+    border: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+#gameboard {
+    display: grid;
+    grid-template-columns: 100px 100px 100px;
+    grid-template-rows: 100px 100px 100px;
+}
+
+.square {
+    background-color: white;
+}
+
+#p0 {
+    border-right: var(--grid-border);
+    border-bottom: var(--grid-border);
+}
+
+#p1 {
+    border-bottom: var(--grid-border);
+}
+
+#p2 {
+    border-left: var(--grid-border);
+    border-bottom: var(--grid-border);
+}
+
+#p3 {
+    border-right: var(--grid-border);
+}
+
+#p5 {
+    border-left: var(--grid-border);
+}
+
+#p6 {
+    border-top: var(--grid-border);
+    border-right: var(--grid-border);
+}
+
+#p7 {
+    border-top: var(--grid-border);
+}
+
+#p8 {
+    border-top: var(--grid-border);
+    border-left: var(--grid-border);
+}
