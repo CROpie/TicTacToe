@@ -1,0 +1,13 @@
+const moduleName = (() => {
+
+    return { }
+})();
+
+This will make the module run as soon as the (window is loaded?) 
+That means that variables like < const variable = 47;> will be able to be accessed immediately
+Even something like < const playerList = theGrid.createPlayers(); > will be able to be accessed immediately
+(requires the return { }, as well as the extra 2 sets of parentheses at the start/end)
+
+EventListener was making things go out of turn, and leading to not defined errors, since "playerList" was being
+defined when the start button was pressed.
+To solve this, an empty playerList was first declared in the object, and it was populated at a later stage.

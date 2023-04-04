@@ -1,106 +1,153 @@
+// Contains most of the functions related to setting up the board and players
 const theGrid = (() => {
-    const playerList = [];
-    const gridButtons = [];
-    const gridTokens = [];
-    let currentTurn = true;
+    // Player Factory
+    const Player = (name, token) => ({ name, token });
 
-    return { playerList, gridButtons, gridTokens, currentTurn };
+    // create an array, populates it with two Player objects
+    const createPlayers = () => {
+        let player0Name = document.querySelector('#left-name').value;
+        if (!player0Name) {
+            player0Name = 'player0';
+        }
+        let player1Name = document.querySelector('#right-name').value;
+        if (!player1Name) {
+            player1Name = 'player1';
+        }
+        const playerList = [];
+        playerList[0] = Player(player0Name, 'X');
+        playerList[1] = Player(player1Name, 'O');
+        return playerList;
+    };
+
+    // creates an array, populates it with 9 Button objects
+    const assignButtons = () => {
+        const gridButtons = [];
+        for (let i = 0; i < 9; i++) {
+            gridButtons[i] = document.querySelector(`#p${i}`);
+        }
+        return gridButtons;
+    };
+
+    // creates an array for the placed tokens
+    // need to put in a default value or else checkResult will be full of NaNs and undefineds
+    const tokenArray = () => {
+        const gridTokens = [];
+        for (let i = 0; i < 9; i++) {
+            gridTokens[i] = '';
+        }
+        return gridTokens;
+    };
+
+    // the array of winning combinations
+    const victoryCombo = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6],
+    ];
+
+    return { createPlayers, assignButtons, tokenArray, victoryCombo };
 })();
 
-const Player = (name, token) => {
-    const sayName = () => console.log(`Hello ${name}`);
-    return { name, token, sayName };
-};
+const gameStart = (() => {
+    // These arrays will be populated when the gameStart function is run, allowing them to be reset
+    let playerList = [];
+    let gridButtons = [];
+    let gridTokens = [];
+    let currentTurn = true;
+    let turnCounter = 0;
+    const messageBoard = document.querySelector('#messageboard');
+    const startButton = document.querySelector('#start-button');
 
-function checkResult() {
-    const g = theGrid.gridTokens;
-    if (
-        g[0] + g[1] + g[2] === 'XXX' ||
-        g[3] + g[4] + g[5] === 'XXX' ||
-        g[6] + g[7] + g[8] === 'XXX' ||
-        g[0] + g[3] + g[6] === 'XXX' ||
-        g[1] + g[4] + g[7] === 'XXX' ||
-        g[2] + g[5] + g[8] === 'XXX' ||
-        g[0] + g[4] + g[8] === 'XXX' ||
-        g[6] + g[4] + g[2] === 'XXX'
-    ) {
-        alert(`The winner is ${theGrid.playerList[0].name}`);
-    }
-    if (
-        g[0] + g[1] + g[2] === 'OOO' ||
-        g[3] + g[4] + g[5] === 'OOO' ||
-        g[6] + g[7] + g[8] === 'OOO' ||
-        g[0] + g[3] + g[6] === 'OOO' ||
-        g[1] + g[4] + g[7] === 'OOO' ||
-        g[2] + g[5] + g[8] === 'OOO' ||
-        g[0] + g[4] + g[8] === 'OOO' ||
-        g[6] + g[4] + g[2] === 'OOO'
-    ) {
-        alert(`The winner is ${theGrid.playerList[1].name}`);
-    }
-}
+    const checkResult = () => {
+        // Run through each array in theGrid.victoryCombo
+        // For each one, insert the appropriate token at the corresponding position into a new array using map
 
-function clickButton(value) {
-    const currentButton = document.querySelector(`#${value}`);
-    const index = value.slice(-1);
+        // (Using map instead of just one forEach is probably superfluous, but wanted to use map)
+        // (Could even insert the token into all appropriate positions in victoryCombo when the token is first placed?)
+        const evaluateResult = theGrid.victoryCombo.map((array) => {
+            const newArray =
+                gridTokens[array[0]] +
+                gridTokens[array[1]] +
+                gridTokens[array[2]];
+            return newArray;
+        });
 
-    if (theGrid.gridTokens[index]) {
+        // Run through the new array, looking for XXX or OOO
+        evaluateResult.forEach((newArray) => {
+            if (newArray[0] + newArray[1] + newArray[2] === 'XXX') {
+                messageBoard.innerHTML = `${playerList[0].name} Wins!!.`;
+                startButton.style.backgroundColor = 'limegreen';
+                return;
+            }
+            if (newArray[0] + newArray[1] + newArray[2] === 'OOO') {
+                messageBoard.innerHTML = `${playerList[1].name} Wins!!.`;
+                startButton.style.backgroundColor = 'limegreen';
+                return;
+            }
+            if (turnCounter === 9) {
+                messageBoard.innerHTML = `The game is a tie.`;
+                startButton.style.backgroundColor = 'limegreen';
+                // without return, this code will be run 9 times
+                // eslint-disable-next-line
+                return;
+            }
+        });
+    };
+
+    // Places a token on the button pressed, calls a check victory function, then changes turn
+    const clickResponse = (button, index) => {
+        const currentButton = button;
+
         // Ignore duplicates
-        return;
-    }
+        if (gridTokens[index]) {
+            return;
+        }
+        // Placing a token
+        if (currentTurn) {
+            currentButton.innerHTML = playerList[0].token;
+            gridTokens[index] = playerList[0].token;
+            currentTurn = false;
+            messageBoard.innerHTML = `${playerList[1].name}'s turn.`;
+        } else {
+            currentButton.innerHTML = playerList[1].token;
+            gridTokens[index] = playerList[1].token;
+            currentTurn = true;
+            messageBoard.innerHTML = `${playerList[0].name}'s turn.`;
+        }
+        turnCounter++;
+        checkResult(playerList);
+    };
 
-    if (theGrid.currentTurn) {
-        currentButton.innerHTML = theGrid.playerList[0].token;
-        theGrid.currentTurn = false;
-        theGrid.gridTokens[index] = theGrid.playerList[0].token;
-        checkResult();
-    } else {
-        currentButton.innerHTML = theGrid.playerList[1].token;
-        theGrid.currentTurn = true;
-        theGrid.gridTokens[index] = theGrid.playerList[1].token;
-        checkResult();
-    }
-}
+    // Reset/create the necessary variables, then add event listeners to every button
+    const commenceGame = () => {
+        playerList = theGrid.createPlayers();
 
-/*
-Assign each html button to a Button object
-Give each one an eventListener, passing the value of the button
-The value corresponds to the position (p0 -> p8)
-*/
-const Button = (position) => {
-    const actualButton = document.querySelector(`#p${position}`);
-    actualButton.addEventListener('click', function () {
-        clickButton(this.value);
-    });
-    return { actualButton };
-};
+        gridButtons = theGrid.assignButtons();
+        gridTokens = theGrid.tokenArray();
+        currentTurn = true;
+        turnCounter = 0;
 
-/*
-Set up an array of Button objects
-*/
-function assignButtons() {
-    for (let i = 0; i < 9; i++) {
-        theGrid.gridButtons[i] = Button(i);
-    }
-}
+        messageBoard.innerHTML = `${playerList[0].name}'s turn.`;
+        startButton.style.backgroundColor = 'grey';
 
-function startGame() {
-    // erases the board, clears the arrays
+        gridButtons.forEach((button, index) => {
+            button.innerHTML = '';
+            button.addEventListener('click', () => {
+                clickResponse(button, index);
+            });
+        });
+    };
 
-    // creates Player objects from the names inputted
-    const player0 = document.querySelector('#left-name').value;
-    const player1 = document.querySelector('#right-name').value;
+    return {
+        commenceGame,
+    };
+})();
 
-    // if blank, insert a default
-    //
-
-    theGrid.playerList[0] = Player(player0, 'X');
-    theGrid.playerList[1] = Player(player1, 'O');
-
-    assignButtons();
-}
-
+// Effectively starts the game
 const startButton = document.querySelector('#start-button');
-startButton.addEventListener('click', function () {
-    startGame();
-});
+startButton.addEventListener('click', gameStart.commenceGame);

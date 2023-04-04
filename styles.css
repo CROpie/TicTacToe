@@ -15,13 +15,19 @@
     border: 2px solid red;
     border-radius: 7px;
     font-size: 2rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 #header > * {
     max-width: 100px;
     text-align: center;
     border: 2px solid red;
+}
+
+#messageboard {
+    max-width: 300px;
+    margin-bottom: 1rem;
+    text-align: center;
 }
 
 #left-token,
@@ -34,9 +40,15 @@
     flex: 3;
 }
 
-#start {
+#start-button {
     flex: 1;
+    background-color: limegreen;
 }
+
+#start-button:hover {
+    background-color: cyan;
+}
+
 #gameboard {
     display: grid;
     grid-template-columns: 100px 100px 100px;
